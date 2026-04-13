@@ -1,7 +1,8 @@
 # Invoice Extraction Service v3.0
 # Dockerfile for Render deployment
+# Using python:3.11-slim-bookworm which has better package availability
 
-FROM python:3.11-slim
+FROM python:3.11-slim-bookworm
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -9,12 +10,13 @@ ENV PYTHONUNBUFFERED=1
 ENV TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata
 
 # Install system dependencies including Tesseract OCR
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# Using separate RUN commands for better error diagnosis
+# Note: bookworm (Debian 12) has tesseract in its repos
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
     tesseract-ocr \
     tesseract-ocr-eng \
-    libtesseract-dev \
-    libgl1-mesa-glx \
-    libglib2.0-0 \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
